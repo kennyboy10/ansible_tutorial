@@ -1,1 +1,3 @@
+
+[rocky_servers] 
 192.168.160.129 ansible_python_interpreter=/usr/bin/python3.12 

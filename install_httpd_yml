@@ -1,21 +1,21 @@
 ---
-- hosts: all
+- name: Configure Apache and PHP on Rocky Linux
+  hosts: all
   become: true
 
   tasks:
-    - name: Update repository index
-      dnf:
-        update_cache: true 
-      when:  ansible_facts["distribution"] == "Rocky"
+    - name: Install httpd and PHP
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - php
+        state: present
+        update_cache: true
+      when: ansible_facts["distribution"] == "Rocky"
 
-    - name: Install httpd package
-      dnf:
+    - name: Start and enable httpd
+      ansible.builtin.service:
         name: httpd
-        state: present 
-      when:  ansible_facts["distribution"] == "Rocky" 
-
-    - name: Install PHP support
-      dnf:
-        name: php
-        state: present 
-      when:  ansible_facts["distribution"] == "Rocky"
+        state: started
+        enabled: true
+      when: ansible_facts["distribution"] == "Rocky"
