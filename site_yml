@@ -1,0 +1,51 @@
+---
+- name: Configure Rocky Linux web and database server
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+
+    - name: Install Apache and PHP
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - php
+        state: present
+        update_cache: true
+      when: ansible_facts["distribution"] == "Rocky"
+      tags:
+        - apache
+        - php
+        - web
+
+    - name: Start and enable httpd
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+      when: ansible_facts["distribution"] == "Rocky"
+      tags:
+        - apache
+        - web
+
+    - name: Copy default HTML site
+      ansible.builtin.copy:
+        src: files/default_site.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+      when: ansible_facts["distribution"] == "Rocky"
+      tags:
+        - apache
+        - web
+
+    - name: Install or update MariaDB server
+      ansible.builtin.dnf:
+        name: mariadb-server
+        state: latest
+        update_cache: true
+      when: ansible_facts["distribution"] == "Rocky"
+      tags:
+        - mariadb
